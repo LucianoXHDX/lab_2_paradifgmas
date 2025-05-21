@@ -1,0 +1,2 @@
+%propiedades (lista) X cartas-suerte (lista) X cartas-comunidad (lista) X casillas-especiales (lista) X tablero (board)
+tablero(Propiedades,CartasSuerte,CartaComunidad,CasillasEspeciales,[Propiedades,CartasSuerte,CartaComunidad,CasillasEspeciales]).
