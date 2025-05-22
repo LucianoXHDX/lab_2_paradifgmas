@@ -7,6 +7,10 @@ jugador(Id, Nombre, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCart
 
 %setter de dinero, propiedades, posicion actual esta en carcel y total de cartas
 %setter dinero
-jugadorSetDinero([Id, Nombre, _, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel],
-                 NuevoDinero,
-                 [Id, Nombre, NuevoDinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel]).
+
+jugadorSetDinero([Id, Nombre, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel],
+                 Incremento,
+                 [Id, Nombre, NuevoDinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel]) :-
+    NuevoDinero is Dinero + Incremento.
+
+
