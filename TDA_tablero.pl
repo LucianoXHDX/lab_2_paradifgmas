@@ -10,3 +10,4 @@ tableroAgregarPropiedades(TableroIN, Propiedades, TableroOUT) :-
     tablero(PropiedadesIN, CartasSuerte, CartaComunidad, CasillasEspeciales, TableroIN),
     append(PropiedadesIN, Propiedades, PropiedadesOUT),
     tablero(PropiedadesOUT, CartasSuerte, CartaComunidad, CasillasEspeciales, TableroOUT).
+%SOLO PARA QUE CUENTE EL COMMIT DEBO ELIMINAR ESTO LUEGO
