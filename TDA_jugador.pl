@@ -1,4 +1,4 @@
-:-module(TDAjugador,[jugador/8,jugadorSetDinero/3,jugadorNuevoDinero/3]).
+:- module(TDAjugador, [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3]).
 
 /*id (int) X nombre (string) X dinero (int) X propiedades (list id's)
  X posicionActual (int) X estaEnCarcel (boolean) X totalCartasSalirCarcel (int) X jugador (TDA player)*/

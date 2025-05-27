@@ -1,4 +1,7 @@
-:-use_module('TDAjugador.pl').
+:- use_module('TDA_jugador.pl', [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3]).
+
+
+
 
 
 
@@ -16,11 +19,13 @@ juegoObtenerJugadorActual(JuegoIn,JugadorActual):-
         juego(Jugadores, _, _, _, TurnoActual, _, _, _, JuegoIn),
         nth0(TurnoActual, Jugadores, JugadorActual).
 %me lo entrega pero lo entrega al inicio tipo hayq ue pasarle todo el texto de una y no consulta por consulta
+%getter de cant de dados, esto no es necesario 
+getJuegoCantidadDados([_Jugadores, _Tablero, _DineroBanco, CantidadDados,_TurnoActual, _TasaImpuesto, _MaxCasas, _MaxHoteles], CantidadDados).
 
 %voy con el lanzar dados
 % Predicado myRandom
 myRandom(Xn, Xn1):-
-  Xn1 is ((1103515245 * Xn) + 12345) mod 2147483648).
+  Xn1 is (((1103515245 * Xn) + 12345) mod 2147483648).
 % Predicado getDadoRandom que recibe la semilla y controla los resultados
 getDadoRandom( Seed, NvaSeed, R):-
     myRandom( Seed, NvaSeed),
@@ -35,3 +40,27 @@ getDadoRandom(822, NvoSeed,R).
 
 % retorna R=3 y NvoSeed=187537622
 getDadoRandom(231139, NvoSeed, R).
+% retorna R=4 y NvoSeed=12345
+getDadoRandom(0, NvoSeed, R).
+
+% retorna R=5 y NvoSeed=522335758
+getDadoRandom(32511, NvoSeed, R).
+
+% retorna R=6 y NvoSeed=883414115
+getDadoRandom(32451, NvoSeed, R).
+
+
+%listaSeed y NuevasSeed, son listas
+juegoLanzarDados(JuegoIn,ListaSeed,NuevasSeed,Resultado):-
+  getJuegoCantidadDados(JuegoIn,ResultadoCantidadDados),
+  lanzar(ResultadoCantidadDados,ListaSeed,NuevasSeed,Resultado).
+%caso base
+lanzar(0,[],[],[]).
+%funcionamiento y llamdas recursivas
+lanzar(ResultadoCantidadDados,[PrimeraSeed|RestoSeed],[PrimeraNuevaSeed|RestoNuevaSeed],[PrimerResultado|RestoResultados]):-
+  ResultadoCantidadDados>0,
+  getDadoRandom(PrimeraSeed,PrimeraNuevaSeed,PrimerResultado),
+  NewCantidadDados is ResultadoCantidadDados-1,
+  lanzar(NewCantidadDados,RestoSeed,RestoNuevaSeed,RestoResultados).
+
+%funciona pero si lo ejecuto todo junto lo del dado, ojo ahi.
