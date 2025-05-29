@@ -1,4 +1,5 @@
-:- use_module('TDA_jugador.pl', [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3]).
+:- use_module('TDA_jugador.pl', [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3,jugadorSumarPosicion/3]).
+:-use_module('TDA_tablero.pl',[tablero/5]).
 
 
 
@@ -9,10 +10,12 @@
 juego(Jugadores,Tablero,DineroBanco,NumeroDados,TurnoActual,TasaImpuesto,MaximoCasas,MaximoHoteles,
 	[Jugadores,Tablero,DineroBanco,NumeroDados,TurnoActual,TasaImpuesto,MaximoCasas,MaximoHoteles]).
 %Agregar jugadadres
-juegoAgregarJugadores([JugadoresIn, Tablero, DineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles],JugadorNuevo,[JugadoresOut, Tablero, NuevoDineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles]):-
-    jugadorNuevoDinero(JugadorNuevo, 1500, JugadorConDinero),
-    append(JugadoresIn, [JugadorConDinero], JugadoresOut),
-    NuevoDineroBanco is DineroBanco - 1500.
+juegoAgregarJugador([JugadoresIn, Tablero, DineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles], 
+        JugadorNuevo,
+        [JugadoresOut, Tablero, NuevoDineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles]):-
+        jugadorNuevoDinero(JugadorNuevo, 1500, JugadorConDinero),
+        append(JugadoresIn, [JugadorConDinero], JugadoresOut),
+        NuevoDineroBanco is DineroBanco - 1500.
 
 %%getter de juego TurnoActual
 juegoObtenerJugadorActual(JuegoIn,JugadorActual):-
@@ -64,3 +67,20 @@ lanzar(ResultadoCantidadDados,[PrimeraSeed|RestoSeed],[PrimeraNuevaSeed|RestoNue
   lanzar(NewCantidadDados,RestoSeed,RestoNuevaSeed,RestoResultados).
 
 %funciona pero si lo ejecuto todo junto lo del dado, ojo ahi.
+sumarDados([],0).
+sumarDados([Cabeza|Cola],Resultado):-
+  sumarDados(Cola,ResultadoAux),
+  Resultado  is ResultadoAux + Cabeza.
+
+
+
+%me falta actualizar la lista de jugadores con el nuevo jugador modificado
+  juegoMoverJugador(JuegoIn,IdJugador,ValoresDados,JuegoOut):-
+    sumarDados(ValoresDados,ResultadoDados),
+    juego(Jugadores,Tablero, DineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles, JuegoIn),
+    nth0(IdJugador, Jugadores, JugadorMover),
+    jugadorSumarPosicion(JugadorMover,ResultadoDados,JugadorMovido),
+    juego(JugadorMovido, Tablero, DineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles, JuegoOut).
+  %%aqui debo actualizar la lista jugadores que contiene al jugador que debo mover y luego retornar esa lisra dentro del 
+
+

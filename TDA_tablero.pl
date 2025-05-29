@@ -1,5 +1,5 @@
 
-
+:- module(tdatablero,[tablero/5]).
 
 
 %propiedades (lista) X cartas-suerte (lista) X cartas-comunidad (lista) X casillas-especiales (lista) X tablero (board)
