@@ -10,6 +10,14 @@ jugador(Id, Nombre, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCart
 
 %setter de dinero, propiedades, posicion actual esta en carcel y total de cartas
 %setter dinero
+jugadorGetDinero([_,_,Dinero|_],Dinero).
+
+
+%getter
+
+
+
+%finGetter
 
 jugadorSetDinero([Id, Nombre, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel],
                  Cambio,
@@ -25,15 +33,19 @@ jugadorSumarPosicion([Id,Nombre,Dinero,Propiedades,PosicionActual,EstaEnCarcel,T
                         NuevaPosicion is PosicionActual + CantAvanza .
 
 %COMPRARPROPIEDAS
+
+
+
 jugadorComprarPropiedad(JugadorIn,PropiedadIn,PropiedadOut,JugadorOut):-
         jugador(IdJugador, NombreJugador, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel,JugadorIn),
-        propiedad(IdPropiedad,NombrePropiedad,Precio,Renta,_,Casas,EsHotel,EstaHipotecada,PropiedadIn),
+        propiedad(IdPropiedad,NombrePropiedad,Precio,Renta,Duenno,Casas,EsHotel,EstaHipotecada,PropiedadIn),
         Dinero>=Precio,%puede comprar la propiedad
-        write("aca?"),
         jugadorSetDinero(JugadorIn,-Precio,JugadorConDineroActualizado),%aqui caga la wea
         jugador(_, _, NuevoDinero, _, _, _, _, JugadorConDineroActualizado),
-        
-         write("hola?"),
         propiedad(IdPropiedad,NombrePropiedad,Precio,Renta,IdJugador,Casas,EsHotel,EstaHipotecada,PropiedadOut),
         append(Propiedades,[IdPropiedad],NuevasPropiedades),
         jugador(IdJugador, NombreJugador, NuevoDinero, NuevasPropiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel,JugadorOut). 
+%verificar bancarrota
+jugadorEstaEnBancarrota(JugadorIn):-
+        jugadorGetDinero(JugadorIn,DineroJugador),
+        DineroJugadro =< 0.

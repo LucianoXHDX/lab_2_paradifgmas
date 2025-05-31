@@ -1,5 +1,6 @@
 :- use_module('TDA_jugador.pl', [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3,jugadorSumarPosicion/3]).
 :-use_module('TDA_tablero.pl',[tablero/5]).
+:-use_module('TDA_propiedad',[propiedad/9,propiedadGetCasas/2,propiedadSetSumarCasa/2]).
 
 
 
@@ -9,6 +10,25 @@
 %TDA juego constructor
 juego(Jugadores,Tablero,DineroBanco,NumeroDados,TurnoActual,TasaImpuesto,MaximoCasas,MaximoHoteles,
 	[Jugadores,Tablero,DineroBanco,NumeroDados,TurnoActual,TasaImpuesto,MaximoCasas,MaximoHoteles]).
+%%GETTTERRSSS
+juegoGetJugadores([Jugadores|_],Jugadores).
+juegoGetTablero([_,Tablero|_],Tablero).
+juegoGetDineroBanco([_,_,DineroBanco|_],DineroBanco).
+juegoGetNumeroDados([_,_,_,NumeroDados|_],NumeroDados).
+juegoGetTurnoActual([_,_,_,_,TurnoActual|_],TurnoActual).
+juegoGetTasaImpuesto([_,_,_,_,_,TasaImpuesto|_],TasaImpuesto).
+juegoGetMaxCasas([_,_,_,_,_,_,MaximoCasas|_],MaxCasas).
+juegoGetMaxHoteles([_,_,_,_,_,_,MaximoHoteles|_],MaxHoteles).
+%FIN GETTERS
+
+
+
+
+
+
+
+
+
 %Agregar jugadadres
 juegoAgregarJugador([JugadoresIn, Tablero, DineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles], 
         JugadorNuevo,
@@ -73,7 +93,6 @@ sumarDados([Cabeza|Cola],Resultado):-
   Resultado  is ResultadoAux + Cabeza.
 
 
-
 %me falta actualizar la lista de jugadores con el nuevo jugador modificado
   juegoMoverJugador(JuegoIn,IdJugador,ValoresDados,JuegoOut):-
     sumarDados(ValoresDados,ResultadoDados),
@@ -83,4 +102,67 @@ sumarDados([Cabeza|Cola],Resultado):-
     juego(JugadorMovido, Tablero, DineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles, JuegoOut).
   %%aqui debo actualizar la lista jugadores que contiene al jugador que debo mover y luego retornar esa lisra dentro del 
 
+%calcular renta
+%getJuegoCantidadMaxCasas([_Jugadores, _Tablero, _DineroBanco, _,_TurnoActual, _TasaImpuesto, MaxCasas, _MaxHoteles], MaxCasas).
 
+%getJuegoCantidadMaxHoteles([_Jugadores, _Tablero, _DineroBanco, _,_TurnoActual, _TasaImpuesto, _MaxCasas, MaxHoteles], MaxHoteles).
+
+
+juegoCalcularRentaPropiedad(JuegoIn,Propiedad,Monto):-
+  propiedad(_Id,_Nombre,_Precio,RentaBase,_Duenno,CantidadCasas,CantidadHotel,EstaHipotecada,Propiedad),
+  juego(_Jugadores,_Tablero, _DineroBanco, _Dados, _Turno, _TasaImpuesto, MaxCasas, _MaxHoteles, JuegoIn),
+  (EstaHipotecada == true ->
+    Monto = 0
+  ; CantidadHotel == true ->
+     Monto is RentaBase*MaxCasas*2
+  ; CantidadCasas>0 ->
+    Monto is  RentaBase*1.2
+  ; 
+  Monto = RentaBase  
+  ).
+
+
+%caso base de suma de monto de las propiedades
+sumarRentaJugador([],0).
+sumarRentaJugador([PrimeraPropiedad|RestoPropiedad],Resultado):-
+        sumarRentaJugador(RestoPropiedad,ResultadoAux),
+        propiedad(_IdPropiedad,_NombrePropiedad,_Precio,Renta,_Duenno,_Casas,_EsHotel,_EstaHipotecada,PrimeraPropiedad),
+        Resultado is ResultadoAux + Renta.
+
+juegoCalcularRentaJugador(JuegoIn,JugadorIn,MontoRenta):-
+  juego(Jugadores,Tablero, _DineroBanco, _Dados, _Turno, _TasaImpuesto, _MaxCasas, _MaxHoteles, JuegoIn),
+  tablero(Propiedades,_CartasSuerte,_CartaComunidad,_CasillasEspeciales,Tablero),
+  jugador(_IdJugador, _NombreJugador, _Dinero, PropiedadesJugador, _PosicionActual, _EstaEnCarcel, _TotalCartasSalirCarcel,JugadorIn),
+  sumarRentaJugador(PropiedadesJugador,MontoRenta).
+  %writeln("Propiedades del jugador:"),
+  %writeln(PropiedadesJugador).
+  %aislar la lista de propiedades esta seran las ids
+juegoConstruirCasas(JuegoIn,PropiedadIn,JuegoOut):-
+  %juego(Jugadores,Tablero, DineroBanco, Dados,Turno, TasaImpuesto, MaxCasas, MaxHoteles, JuegoIn),
+  juegoGetJugadores(JuegoIn,Jugadores),
+  juegoGetTablero(JuegoIn,Tablero),
+  juegoGetDineroBanco(JuegoIn,DineroBanco),
+  juegoGetNumeroDados(JuegoIn,NumeroDados),
+  juegoGetTurnoActual(JuegoIn,TurnoActual),
+  juegoGetTasaImpuesto(JuegoIn,TasaImpuesto),
+  juegoGetMaxCasas(JuegoIn,MaxCasas),
+  juegoGetMaxHoteles(JuegoIn,MaxHoteles), 
+  propiedadGetCasas(PropiedadIn,CasasEnPropiedad),
+  CasasEnPropiedad<MaxCasas,
+  propiedadSetSumarCasa(PropiedadIn,PropiedadOut).
+%%me falta actualizar la lista que esta en tablero, para agregar esta porpiedad con la modificacion
+
+juegoConstruirHotel(JuegoIn,PropiedadIn,JuegoOut):-
+  %juego(Jugadores,Tablero, DineroBanco, Dados,Turno, TasaImpuesto, MaxCasas, MaxHoteles, JuegoIn),
+  juegoGetJugadores(JuegoIn,Jugadores),
+  juegoGetTablero(JuegoIn,Tablero),
+  juegoGetDineroBanco(JuegoIn,DineroBanco),
+  juegoGetNumeroDados(JuegoIn,NumeroDados),
+  juegoGetTurnoActual(JuegoIn,TurnoActual),
+  juegoGetTasaImpuesto(JuegoIn,TasaImpuesto),
+  juegoGetMaxCasas(JuegoIn,MaxCasas),
+  juegoGetMaxHoteles(JuegoIn,MaxHoteles), 
+  propiedadGetCasas(PropiedadIn,CasasEnPropiedad),
+  CasasEnPropiedad=MaxCasas,
+  propiedadSetHotel(PropiedadIn,PropiedadOut).
+%%me falta actualizar la lista que esta en tablero, para agregar esta porpiedad con la modificacion y quitar el precio al jugador
