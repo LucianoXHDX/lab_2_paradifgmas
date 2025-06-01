@@ -57,12 +57,6 @@ jugadorGetEstaEnCarcel([_,_,_,_,_,EstaEnCarcel|_],EstaEnCarcel).
 jugadorGetTotalCartasSalirCarcel([_,_,_,_,_,_,TotalCartasSalirCarcel|_],TotalCartasSalirCarcel).
 
 
-%getter
-
-
-
-%finGetter
-
 %Descripcion:
 %Dominio:
 %Recorrido:
@@ -78,7 +72,7 @@ jugadorSetDinero([Id, Nombre, Dinero, Propiedades, PosicionActual, EstaEnCarcel,
 %Recorrido:
 %Tipo de algoritmo:
 jugadorNuevoDinero([Id, Nombre, _, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel], NuevaPlata,[Id, Nombre, NuevaPlata, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel]).
- %setter Mover jugador y que se sume su posicion
+ 
 
 %Descripcion:
 %Dominio:
@@ -89,10 +83,10 @@ jugadorSumarPosicion([Id,Nombre,Dinero,Propiedades,PosicionActual,EstaEnCarcel,T
                         [Id,Nombre,Dinero,Propiedades,NuevaPosicion,EstaEnCarcel,TotalCartasSalirCarcel]):-
                         NuevaPosicion is PosicionActual + CantAvanza .
 
-%COMPRARPROPIEDAS
 
 
-%hacer con setters
+
+
 
 %Descripcion:
 %Dominio:
