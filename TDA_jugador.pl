@@ -1,16 +1,26 @@
-:- module(tdajugador, [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3,jugadorSumarPosicion/3]).
+:- module(tdajugador, [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3,jugadorSumarPosicion/3,jugadorGetId/2]).
 :- use_module('TDA_propiedad.pl',[propiedad/9]).
 %:- use_module('TDA_propiedad.pl',[propiedad/9]).
 /*id (int) X nombre (string) X dinero (int) X propiedades (list id's)
  X posicionActual (int) X estaEnCarcel (boolean) X totalCartasSalirCarcel (int) X jugador (TDA player)*/
 
+%Descripcion:
+%Dominio:
+%Recorrido:
+%Tipo de algoritmo:
 
 jugador(Id, Nombre, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel,
         [Id, Nombre, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel]).
 
 %setter de dinero, propiedades, posicion actual esta en carcel y total de cartas
 %setter dinero
+jugadorGetId([Id|_],Id).
+jugadorGetNombre([_,Nombre|_],Nombre).
 jugadorGetDinero([_,_,Dinero|_],Dinero).
+jugadorGetPropiedades([_,_,_,Propiedades|_],Propiedades).
+jugadorGetPosicionActual([_,_,_,_,PosicionActual|_],PosicionActual).
+jugadorGetEstaEnCarcel([_,_,_,_,_,EstaEnCarcel|_],EstaEnCarcel).
+jugadorGetTotalCartasSalirCarcel([_,_,_,_,_,_,TotalCartasSalirCarcel|_],TotalCartasSalirCarcel).
 
 
 %getter
@@ -35,10 +45,10 @@ jugadorSumarPosicion([Id,Nombre,Dinero,Propiedades,PosicionActual,EstaEnCarcel,T
 %COMPRARPROPIEDAS
 
 
-
+%hacer con setters
 jugadorComprarPropiedad(JugadorIn,PropiedadIn,PropiedadOut,JugadorOut):-
         jugador(IdJugador, NombreJugador, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel,JugadorIn),
-        propiedad(IdPropiedad,NombrePropiedad,Precio,Renta,Duenno,Casas,EsHotel,EstaHipotecada,PropiedadIn),
+        propiedad(IdPropiedad,NombrePropiedad,Precio,Renta,_Duenno,Casas,EsHotel,EstaHipotecada,PropiedadIn),
         Dinero>=Precio,%puede comprar la propiedad
         jugadorSetDinero(JugadorIn,-Precio,JugadorConDineroActualizado),%aqui caga la wea
         jugador(_, _, NuevoDinero, _, _, _, _, JugadorConDineroActualizado),
@@ -48,4 +58,19 @@ jugadorComprarPropiedad(JugadorIn,PropiedadIn,PropiedadOut,JugadorOut):-
 %verificar bancarrota
 jugadorEstaEnBancarrota(JugadorIn):-
         jugadorGetDinero(JugadorIn,DineroJugador),
-        DineroJugadro =< 0.
+        DineroJugador =< 0.
+%verdadero si esta en bancarrota
+%setter para mover al jugador
+
+
+
+
+/*tableroActualizarPropiedades([],_,[]).% caso base
+
+tableroActualizarPropiedades([PrimeraPropiedad|RestoPropiedades],PropiedadIn,[PropiedadIn|RestoPropiedades]):-
+  propiedadGetId(PropiedadIn,IdPropiedadIn),
+  propiedadGetId(PrimeraPropiedad,IdPrimeraPropiedad),
+  IdPrimeraPropiedad =:= IdPropiedadIn, !.
+
+tableroActualizarPropiedades([PrimeraPropiedad|RestoPropiedades],PropiedadIn,[PrimeraPropiedad|ListaPropiedadesActualizadas]):-
+  tableroActualizarPropiedades(RestoPropiedades,PropiedadIn,ListaPropiedadesActualizadas).*/

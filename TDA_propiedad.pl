@@ -1,6 +1,6 @@
 /*id (int) X nombre (string) X precio (int) X renta (int) X dueño
 (id_jugador/null) X casas (int) X esHotel (boolean) X estaHipotecada (boolean) X propiedad (property)*/
-:-module(tdapropiedad, [propiedad/9,propiedadGetCasas/2,propiedadSetSumarCasa/2,propiedadSetHotel/2,propiedadSetHipotecada/2]).
+:-module(tdapropiedad, [propiedad/9,propiedadGetCasas/2,propiedadSetSumarCasa/2,propiedadSetHotel/2,propiedadSetHipotecada/2,propiedadGetId/2]).
 
 
 propiedad(Id,Nombre,Precio,Renta,Duenno,Casas,EsHotel,EstaHipotecada,
@@ -55,9 +55,8 @@ propiedadSetHotel(PropiedadIn,PropiedadOut):-
     propiedadGetPrecio(PropiedadIn,ResultadoPrecio),
     propiedadGetRenta(PropiedadIn,ResultadoRenta),
     propiedadGetDuenno(PropiedadIn,ResultadoDuenno),
-    propiedadGetCasas(PropiedadIn,ResultadoCantCasas),
     propiedadGetHipotecada(PropiedadIn,ResultadoHipoteca),
-    propiedad(ResultadoId,ResultadoNombre,ResultadoPrecio,ResultadoRenta,ResultadoDuenno,ResultadoCantCasas,true,ResultadoHipoteca,PropiedadOut).
+    propiedad(ResultadoId, ResultadoNombre, ResultadoPrecio, ResultadoRenta, ResultadoDuenno, 0, true, ResultadoHipoteca, PropiedadOut).
 %setter de hipotecada
 propiedadSetHipotecada(PropiedadIn,PropiedadOut):-
     propiedadGetId(PropiedadIn,ResultadoId),
