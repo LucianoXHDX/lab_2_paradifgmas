@@ -1,5 +1,5 @@
 :- use_module('TDA_jugador.pl', [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3,jugadorSumarPosicion/3]).
-:-use_module('TDA_tablero.pl',[tablero/5,tableroGetPropiedades/2,tableroGetCartasSuerte/2,tableroGetCartasComunidad/2,tableroGetCasillasEspeciales/2,tableroActualizarPropiedades/3,tableroSetListaPropiedades/3,tableroActualizarJugadores/3]).
+:-use_module('TDA_tablero.pl',[tablero/5,tableroGetPropiedades/2,tableroGetCartasSuerte/2,tableroGetCartasComunidad/2,tableroGetCasillasEspeciales/2,tableroActualizarPropiedades/3,tableroSetListaPropiedades/3,tableroActualizarJugadores/3,tableroActualizarCartas/3,tableroSetListaCartasComunidad/3,tableroSetListaCartasSuerte/3]).
 :-use_module('TDA_propiedad',[propiedad/9,propiedadGetCasas/2,propiedadSetSumarCasa/2,propiedadSetHotel/2,propiedadSetHipotecada/2]).
 %COMENTADA CORRECTAMENTE
 /* -----------------------------------------| 
@@ -65,6 +65,9 @@ juegoGetMaxCasas([_,_,_,_,_,_,MaximoCasas|_],MaximoCasas).
 %Recorrido:MaximoHoteles(int)
 %Tipo de algoritmo:Acceso a un elemento de la lista
 juegoGetMaxHoteles([_,_,_,_,_,_,MaximoHoteles|_],MaximoHoteles).
+
+
+
 
 
 %Descripcion:Esta funcion permite crear un nuevo juego con un nuevo tablero dentro de este juego
@@ -298,3 +301,29 @@ juegoConstruirHotel(JuegoIn,PropiedadIn,JuegoOut):-
 
 
 
+% extraer carta
+%no esta probadooo debo probarlos
+juegoExtraerCarta(JuegoIn,TipoMazo,Seed,NuevaSeed,JuegoOut,CartaOut):-
+  juegoGetTablero(JuegoIn,Tablero),
+  tableroGetCartasComunidad(Tablero,CartasComunidad),
+  tableroGetCartasSuerte(Tablero,CartasSuerte),
+  getDadoRandom([Seed|_],NuevaSeed,ResultadoRandom),%esto solo me entrega del uno al 6 ojo
+  (TipoMazo=="carta comunidad"->     %debe estar escrito igual si no se cae
+    nth0(ResultadoRandom,CartasComunidad,CartaOut),
+     tableroActualizarCartas(CartasComunidad, CartaOut, NuevasCartasComunidad),
+     tableroSetListaCartasComunidad(Tablero, NuevasCartasComunidad, TableroActualizado),
+     writeln("tu carta es: "),
+     writeln(CartaOut)
+    
+
+   ;TipoMazo=="carta suerte"->
+    nth0(ResultadoRandom,CartasSuerte,CartaOut),
+    tableroActualizarCartas(CartasSuerte, CartaOut, NuevasCartasSuerte),
+    tableroSetListaCartasSuerte(Tablero, NuevasCartasSuerte, TableroActualizado),
+     writeln("tu carta es: "),
+     writeln(CartaOut)
+  ),
+  juegoSetTablero(JuegoIn,TableroActualizado,JuegoOut).
+
+
+% juego(Jugadores,TableroIn,DineroBanco,NumeroDados,TurnoActual,TasaImpuesto,MaxCasas,MaxHoteles,JuegoOut).

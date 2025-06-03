@@ -6,7 +6,7 @@
 |                                           |
 |-------------------------------------------|
 */
-
+:-module(tdacarta,[carta/5,cartaGetID/2]).
 %esta correctamente comentada pero me falta la parte de que se pueda extraer una carta ahi saldran mas funciones
 %FALTA PORDER EXTRAER LAS CARTAS PARA EL RF
 %Id (int) X tipo (string) X descripcion (string) X accion (predicado) X carta (card)
@@ -21,3 +21,4 @@ carta(Id,Tipo,Descripcion,Accion,[Id,Tipo,Descripcion,Accion]).
 %Dominio:
 %Recorrido:
 %Tipo de algoritmo:
+cartaGetID([ID|_],ID).

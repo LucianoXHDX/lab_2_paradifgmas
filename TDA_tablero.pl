@@ -1,7 +1,8 @@
 
-:- module(tdatablero, [tablero/5,tableroGetPropiedades/2,tableroGetCartasSuerte/2,tableroGetCartasComunidad/2,tableroGetCasillasEspeciales/2,tableroActualizarPropiedades/3,tableroSetListaPropiedades/3,tableroActualizarJugadores/3]).
+:- module(tdatablero, [tablero/5,tableroGetPropiedades/2,tableroGetCartasSuerte/2,tableroGetCartasComunidad/2,tableroGetCasillasEspeciales/2,tableroActualizarPropiedades/3,tableroSetListaPropiedades/3,tableroActualizarJugadores/3,tableroActualizarCartas/3,tableroSetListaCartasComunidad/3,tableroSetListaCartasSuerte/3]).
 :-use_module('TDA_propiedad',[propiedadGetId/2]).
 :- use_module('TDA_jugador.pl', [jugadorGetId/2]).
+:- use_module('TDA_carta.pl',[carta/5,cartaGetID/2]).
 /* -----------------------------------------| 
 |                                           |
 |                                           |
@@ -66,6 +67,23 @@ tableroSetListaPropiedades(TableroIn,NewListaPropiedades,TableroOut):-
     tableroGetCasillasEspeciales(TableroIn,CasillasEspecialesOut),
     tablero(NewListaPropiedades,CartasSuerteOut,CartasComunidadOut,CasillasEspecialesOut,TableroOut).
 
+
+tableroSetListaCartasComunidad(TableroIn,NewCartasComunidad,TableroOut):-
+  tableroGetPropiedades(TableroIn,Propiedades),
+  tableroGetCartasSuerte(TableroIn,CartasSuerte),
+  tableroGetCasillasEspeciales(TableroIn,CasillasEspeciales),
+  tablero(Propiedades,CartasSuerte,NewCartasComunidad,CasillasEspeciales,TableroOut).
+
+tableroSetListaCartasSuerte(TableroIn,NewCartasSuerte,TableroOut):-
+  tableroGetPropiedades(TableroIn,Propiedades),
+  tableroGetCartasComunidad(TableroIn,CartasComunidad),
+  tableroGetCasillasEspeciales(TableroIn,CasillasEspeciales),
+  tablero(Propiedades,NewCartasSuerte,CartasComunidad,CasillasEspeciales,TableroOut).
+
+
+
+
+
 %hecho por mi con recursion 
 %Descripcion:Esta función reemplaza una propiedad dentro de una lista de propiedades por una versión modificada,
 %              buscando por coincidencia de ID. Si encuentra una propiedad con el mismo ID, la reemplaza y
@@ -99,3 +117,26 @@ tableroActualizarJugadores([PrimerJugador|RestoJugadores],JugadorIn,[JugadorIn|R
      !.
 tableroActualizarJugadores([PrimerJugador|RestoJugadores],JugadorIn,[PrimerJugador|ListaJugadoresActualizada]):-
     tableroActualizarJugadores(RestoJugadores,JugadorIn,ListaJugadoresActualizada).
+/*ableroActualizarPropiedades([],_,[]).% caso base
+
+tableroActualizarPropiedades([PrimeraPropiedad|RestoPropiedades],PropiedadIn,[PropiedadIn|RestoPropiedades]):-
+  propiedadGetId(PropiedadIn,IdPropiedadIn),
+  propiedadGetId(PrimeraPropiedad,IdPrimeraPropiedad),
+  IdPrimeraPropiedad =:= IdPropiedadIn, 
+  !.
+
+tableroActualizarPropiedades([PrimeraPropiedad|RestoPropiedades],PropiedadIn,[PrimeraPropiedad|ListaPropiedadesActualizadas]):-
+  tableroActualizarPropiedades(RestoPropiedades,PropiedadIn,ListaPropiedadesActualizadas).*/
+
+%debo hacer uno para cartas suerte y uno para cartas comunidad
+%FUNCIOANANDO
+tableroActualizarCartas([],_,[]).
+tableroActualizarCartas([PrimeraCarta|RestoCartas],CartaEliminar,ListaEliminada):-
+  cartaGetID(CartaEliminar,IdCartaEliminar),
+  cartaGetID(PrimeraCarta,IdPrimeracarta),
+  IdCartaEliminar==IdPrimeracarta,
+  !,
+  tableroActualizarCartas(RestoCartas,CartaEliminar,ListaEliminada).
+
+tableroActualizarCartas([PrimeraCarta|RestoCartas],CartaEliminar,[PrimeraCarta|ListaCartasSuerteActualizadas]):-
+  tableroActualizarCartas(RestoCartas,CartaEliminar,ListaCartasSuerteActualizadas).
