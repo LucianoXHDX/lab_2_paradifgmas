@@ -1,7 +1,22 @@
-:- module(tdajugador, [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3,jugadorSumarPosicion/3,jugadorGetId/2]).
-:- use_module('TDA_propiedad.pl',[propiedad/9]).
-%:- use_module('TDA_propiedad.pl',[propiedad/9]).
 
+:- module(tdajugador, [
+    jugador/8,
+    jugadorGetId/2,
+    jugadorGetNombre/2,
+    jugadorGetDinero/2,
+    jugadorGetPropiedades/2,
+    jugadorGetPosicionActual/2,
+    jugadorGetEstaEnCarcel/2,
+    jugadorGetTotalCartasSalirCarcel/2,
+    jugadorSetDinero/3,
+    jugadorNuevoDinero/3,
+    jugadorSumarPosicion/3,
+    jugadorComprarPropiedad/4,
+    jugadorEstaEnBancarrota/1,
+    jugadorPagarRenta/5
+]).
+
+:- use_module('TDA_propiedad.pl', [propiedad/9, propiedadGetId/2]).
 %COMENTADA CORRECTAMENTE
 /* -----------------------------------------| 
 |                                           |
@@ -80,7 +95,7 @@ jugadorSetDinero([Id, Nombre, Dinero, Propiedades, PosicionActual, EstaEnCarcel,
 
 
 %Descripcion:Esta funcion modifca el dinero de un jugador, eliminando el dinero anterior y cambiandolo por el nuevo dinero.
-%            Devuelve un nuevo jugador con el nuevo dinero y el resto de atributos iguales
+%            Devuelve un nuevo jugador con el nuevo dinero y el resto de atributos iguales,esto me sirve para la funcionalidades de las cartas
 %Dominio:Jugador(list)XNuevaPlata(int)
 %Recorrido:JugadorMoficado(list)
 %Tipo de algoritmo:Modificador de elemento en la estructura
@@ -104,9 +119,10 @@ jugadorSumarPosicion([Id,Nombre,Dinero,Propiedades,PosicionActual,EstaEnCarcel,T
 %Recorrido:JugadorModificado(list)XPropiedadModificada(list)
 %Tipo de algoritmo:modificador de estructuas
 jugadorComprarPropiedad(JugadorIn,PropiedadIn,PropiedadOut,JugadorOut):-
-        jugador(IdJugador, NombreJugador, Dinero, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel,JugadorIn),
+        jugador(IdJugador, NombreJugador, _, Propiedades, PosicionActual, EstaEnCarcel, TotalCartasSalirCarcel,JugadorIn),
         propiedad(IdPropiedad,NombrePropiedad,Precio,Renta,_Duenno,Casas,EsHotel,EstaHipotecada,PropiedadIn),
-        Dinero>=Precio,%puede comprar la propiedad
+        jugadorGetDinero(JugadorIn,DineroJugador),
+        DineroJugador>=Precio,%puede comprar la propiedad
         jugadorSetDinero(JugadorIn,-Precio,JugadorConDineroActualizado),
         jugador(_, _, NuevoDinero, _, _, _, _, JugadorConDineroActualizado),
         propiedad(IdPropiedad,NombrePropiedad,Precio,Renta,IdJugador,Casas,EsHotel,EstaHipotecada,PropiedadOut),
@@ -122,3 +138,10 @@ jugadorEstaEnBancarrota(JugadorIn):-
         jugadorGetDinero(JugadorIn,DineroJugador),
         DineroJugador =< 0.
 %verdadero si esta en bancarrota
+
+
+%pagar renta a otro jugador
+
+jugadorPagarRenta(JugadorPagadorIn,JugadorReceptorIn,Monto,JugadorPagadorOut,JugadorReceptorOut):-
+        jugadorSetDinero(JugadorReceptorIn,Monto,JugadorReceptorOut),%es el jugador que recibe el dinero
+        jugadorSetDinero(JugadorPagadorIn,-Monto,JugadorPagadorOut).%es el jugador que debe pagar

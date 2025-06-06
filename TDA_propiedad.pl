@@ -1,5 +1,5 @@
 
-:-module(tdapropiedad, [propiedad/9,propiedadGetCasas/2,propiedadSetSumarCasa/2,propiedadSetHotel/2,propiedadSetHipotecada/2,propiedadGetId/2]).
+
 /* -----------------------------------------| 
 |                                           |
 |                                           |
@@ -7,6 +7,21 @@
 |                                           |
 |-------------------------------------------|
 */
+
+:- module(tdapropiedad, [
+    propiedad/9,
+    propiedadGetId/2,
+    propiedadGetNombre/2,
+    propiedadGetPrecio/2,
+    propiedadGetRenta/2,
+    propiedadGetDuenno/2,
+    propiedadGetCasas/2,
+    propiedadGetHotel/2,
+    propiedadGetHipotecada/2,
+    propiedadSetSumarCasa/2,
+    propiedadSetHotel/2,
+    propiedadHipotecar/2
+]).
 
 %Descripcion: Esta funcion es el constructor del TDA propiedad, genera una lista  que representa una propiedad en el juego
 %Dominio:Id(list)XNombre(string)XPrecio(int)XRenta(int)XDuenno(Id_jugador/null)XCasas(int)XEsHotel(bool)XEstaHipotecada(bool)
@@ -55,7 +70,7 @@ propiedadGetDuenno([_,_,_,_,Duenno|_],Duenno).
 %Dominio:Propiedad(list)
 %Recorrido:Cantidad de Casas(int)
 %Tipo de algoritmo:Acceso a un elemento de la lista
-propiedadGetCasas([_,_,_,_,_,Casas|_],Casas).
+propiedadGetCasas([_, _, _, _, _, Casas, _, _], Casas).
 
 
 %getter de Hotel
@@ -110,8 +125,8 @@ propiedadSetHotel(PropiedadIn,PropiedadOut):-
 %Descripcion:Esta funcion permite hipotecar la propiedad, crea una propiedad con todos los parametros iguales excepto por el booleano asociado a si la propiedad esta hipotecada, la cual lo deja con true(verdader)
 %Dominio:PropiedadIn(list)
 %Recorrido:PropiedadOut(list)
-%Tipo de algoritmo:Modificador
-propiedadSetHipotecada(PropiedadIn,PropiedadOut):-
+%Tipo de algoritmo:Modificador propiedadHipotecar
+propiedadHipotecar(PropiedadIn,PropiedadOut):-
     propiedadGetId(PropiedadIn,ResultadoId),
     propiedadGetNombre(PropiedadIn,ResultadoNombre),
     propiedadGetPrecio(PropiedadIn,ResultadoPrecio),

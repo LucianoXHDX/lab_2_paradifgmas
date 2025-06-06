@@ -1,8 +1,23 @@
+:- module(tdatablero, [
+    tablero/5,
+    tableroGetPropiedades/2,
+    tableroGetCartasSuerte/2,
+    tableroGetCartasComunidad/2,
+    tableroGetCasillasEspeciales/2,
+    tableroAgregarPropiedades/3,
+    tableroSetListaPropiedades/3,
+    tableroSetListaCartasComunidad/3,
+    tableroSetListaCartasSuerte/3,
+    tableroActualizarPropiedades/3,
+    tableroActualizarJugadores/3,
+    tableroActualizarCartas/3,
+    tableroGetPropiedad/3,
+    tableroExtraerPropiedad/2
+]).
 
-:- module(tdatablero, [tablero/5,tableroGetPropiedades/2,tableroGetCartasSuerte/2,tableroGetCartasComunidad/2,tableroGetCasillasEspeciales/2,tableroActualizarPropiedades/3,tableroSetListaPropiedades/3,tableroActualizarJugadores/3,tableroActualizarCartas/3,tableroSetListaCartasComunidad/3,tableroSetListaCartasSuerte/3]).
-:-use_module('TDA_propiedad',[propiedadGetId/2]).
+:- use_module('TDA_propiedad.pl', [propiedadGetId/2]).
 :- use_module('TDA_jugador.pl', [jugadorGetId/2]).
-:- use_module('TDA_carta.pl',[carta/5,cartaGetID/2]).
+:- use_module('TDA_carta.pl', [cartaGetID/2]).
 /* -----------------------------------------| 
 |                                           |
 |                                           |
@@ -29,6 +44,7 @@ tableroAgregarPropiedades(TableroIn, Propiedades, TableroOut) :-
     tableroGetCartasComunidad(TableroIn, CartasComunidad),
     tableroGetCasillasEspeciales(TableroIn, CasillasEspeciales),
     append(PropiedadesIn, Propiedades, PropiedadesOut),
+    
     tablero(PropiedadesOut, CartasSuerte, CartasComunidad, CasillasEspeciales, TableroOut).
 
 %%getteerr
@@ -57,6 +73,11 @@ tableroGetCartasComunidad([_,_,CartasComunidad|_],CartasComunidad).
 tableroGetCasillasEspeciales([_,_,_,CasillasEspeciales|_],CasillasEspeciales).
 
 
+
+
+
+
+
 %Descripcion:Esta funcion crea un nuevo tablero con todos los parametros iguales excepto la lista de propiedades que uno de los argumentos que se le pasa  a la funcion
 %Dominio:TableroIn(list)XNuevaListaPropiedades(list)
 %Recorrido:TableroOut(list)
@@ -67,13 +88,20 @@ tableroSetListaPropiedades(TableroIn,NewListaPropiedades,TableroOut):-
     tableroGetCasillasEspeciales(TableroIn,CasillasEspecialesOut),
     tablero(NewListaPropiedades,CartasSuerteOut,CartasComunidadOut,CasillasEspecialesOut,TableroOut).
 
-
+%Descripcion:Esta funcion es para poder agregar las cartas de comunidad a la lista que representa el tablero
+%Dominio:TableroIn(list)XNewCartasComunida(list)
+%Recorrido:TableroOut(list)
+%Tipo de algoritmo:Modificado
 tableroSetListaCartasComunidad(TableroIn,NewCartasComunidad,TableroOut):-
   tableroGetPropiedades(TableroIn,Propiedades),
   tableroGetCartasSuerte(TableroIn,CartasSuerte),
   tableroGetCasillasEspeciales(TableroIn,CasillasEspeciales),
   tablero(Propiedades,CartasSuerte,NewCartasComunidad,CasillasEspeciales,TableroOut).
 
+%Descripcion:Esta funcion es para poder agregar las cartas de suerte a la lista que representa el tablero
+%Dominio:TableroIn(list)XNewCartasSuerte(list)
+%Recorrido:TableroOut(list)
+%Tipo de algoritmo:Modificador
 tableroSetListaCartasSuerte(TableroIn,NewCartasSuerte,TableroOut):-
   tableroGetPropiedades(TableroIn,Propiedades),
   tableroGetCartasComunidad(TableroIn,CartasComunidad),
@@ -93,13 +121,13 @@ tableroSetListaCartasSuerte(TableroIn,NewCartasSuerte,TableroOut):-
 %Tipo de algoritmo:
 tableroActualizarPropiedades([],_,[]).% caso base
 
-tableroActualizarPropiedades([PrimeraPropiedad|RestoPropiedades],PropiedadIn,[PropiedadIn|RestoPropiedades]):-
+tableroActualizarPropiedades([[PrimeraPropiedad,Pos]|RestoPropiedades],PropiedadIn,[[PropiedadIn,Pos]|RestoPropiedades]):-
   propiedadGetId(PropiedadIn,IdPropiedadIn),
   propiedadGetId(PrimeraPropiedad,IdPrimeraPropiedad),
   IdPrimeraPropiedad =:= IdPropiedadIn, 
   !.
 
-tableroActualizarPropiedades([PrimeraPropiedad|RestoPropiedades],PropiedadIn,[PrimeraPropiedad|ListaPropiedadesActualizadas]):-
+tableroActualizarPropiedades([[PrimeraPropiedad,Pos]|RestoPropiedades],PropiedadIn,[[PrimeraPropiedad,Pos]|ListaPropiedadesActualizadas]):-
   tableroActualizarPropiedades(RestoPropiedades,PropiedadIn,ListaPropiedadesActualizadas).
 %otra funcion
 %Descripcion:Esta función reemplaza un jugador dentro de una lista de jugadores por una versión modificada,
@@ -117,18 +145,8 @@ tableroActualizarJugadores([PrimerJugador|RestoJugadores],JugadorIn,[JugadorIn|R
      !.
 tableroActualizarJugadores([PrimerJugador|RestoJugadores],JugadorIn,[PrimerJugador|ListaJugadoresActualizada]):-
     tableroActualizarJugadores(RestoJugadores,JugadorIn,ListaJugadoresActualizada).
-/*ableroActualizarPropiedades([],_,[]).% caso base
 
-tableroActualizarPropiedades([PrimeraPropiedad|RestoPropiedades],PropiedadIn,[PropiedadIn|RestoPropiedades]):-
-  propiedadGetId(PropiedadIn,IdPropiedadIn),
-  propiedadGetId(PrimeraPropiedad,IdPrimeraPropiedad),
-  IdPrimeraPropiedad =:= IdPropiedadIn, 
-  !.
 
-tableroActualizarPropiedades([PrimeraPropiedad|RestoPropiedades],PropiedadIn,[PrimeraPropiedad|ListaPropiedadesActualizadas]):-
-  tableroActualizarPropiedades(RestoPropiedades,PropiedadIn,ListaPropiedadesActualizadas).*/
-
-%debo hacer uno para cartas suerte y uno para cartas comunidad
 %FUNCIOANANDO
 tableroActualizarCartas([],_,[]).
 tableroActualizarCartas([PrimeraCarta|RestoCartas],CartaEliminar,ListaEliminada):-
@@ -140,3 +158,18 @@ tableroActualizarCartas([PrimeraCarta|RestoCartas],CartaEliminar,ListaEliminada)
 
 tableroActualizarCartas([PrimeraCarta|RestoCartas],CartaEliminar,[PrimeraCarta|ListaCartasSuerteActualizadas]):-
   tableroActualizarCartas(RestoCartas,CartaEliminar,ListaCartasSuerteActualizadas).
+
+
+%Descripcion:Esta funcion sirve para obtener una propiedad buscada por su id, para esto se la pasa el tablero y el id de la propiedad que quiero buscar y devuleve la propiedad
+
+%Dominio:TableroIn(list)XIDPropiedad(int)
+%Recorrido:Propiedad(list)
+%Tipo de algoritmo: Acceso a un elemento
+tableroGetPropiedad(TableroIn, IdPropiedad, PropiedadOut):-
+  tableroGetPropiedades(TableroIn, ListaPropiedades),
+  Indice is IdPropiedad-1,
+  nth0(Indice, ListaPropiedades, PropiedadOut),
+  [PropiedadOut|_].
+
+%para ignorar la posicion
+tableroExtraerPropiedad([Propiedad, _], Propiedad).

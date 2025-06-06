@@ -1,7 +1,47 @@
-:- use_module('TDA_jugador.pl', [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3,jugadorSumarPosicion/3]).
-:-use_module('TDA_tablero.pl',[tablero/5,tableroGetPropiedades/2,tableroGetCartasSuerte/2,tableroGetCartasComunidad/2,tableroGetCasillasEspeciales/2,tableroActualizarPropiedades/3,tableroSetListaPropiedades/3,tableroActualizarJugadores/3,tableroActualizarCartas/3,tableroSetListaCartasComunidad/3,tableroSetListaCartasSuerte/3]).
-:-use_module('TDA_propiedad',[propiedad/9,propiedadGetCasas/2,propiedadSetSumarCasa/2,propiedadSetHotel/2,propiedadSetHipotecada/2]).
-%COMENTADA CORRECTAMENTE
+:- module(tda_juego, [
+    juego/9,
+    juegoGetJugadores/2,
+    juegoGetTablero/2,
+    juegoGetDineroBanco/2,
+    juegoGetNumeroDados/2,
+    juegoGetTurnoActual/2,
+    juegoGetTasaImpuesto/2,
+    juegoGetMaxCasas/2,
+    juegoGetMaxHoteles/2,
+    juegoSetTablero/3,
+    juegoAgregarJugador/3,
+    juegoObtenerJugadorActual/2,
+    myRandom/2,
+    getDadoRandom/3,
+    juegoLanzarDados/4,
+    sumarDados/2,
+    juegoMoverJugador/4,
+    juegoCalcularRentaPropiedad/3,
+    sumarRentaJugador/2,
+    juegoCalcularRentaJugador/3,
+    juegoConstruirCasa/3,
+    juegoConstruirHotel/3,
+    juegoExtraerCarta/6
+]).
+:- use_module('TDA_jugador.pl', [jugador/8, jugadorSetDinero/3, jugadorNuevoDinero/3, jugadorSumarPosicion/3]).
+:- use_module('TDA_tablero.pl', [
+    tablero/5,
+    tableroGetPropiedades/2,
+    tableroGetCartasSuerte/2,
+    tableroGetCartasComunidad/2,
+    tableroActualizarPropiedades/3,
+    tableroSetListaPropiedades/3,
+    tableroActualizarJugadores/3,
+    tableroActualizarCartas/3,
+    tableroSetListaCartasComunidad/3,
+    tableroSetListaCartasSuerte/3
+]).
+:- use_module('TDA_propiedad.pl', [propiedad/9, propiedadGetCasas/2, propiedadSetSumarCasa/2, propiedadSetHotel/2, propiedadHipotecar/2,propiedadGetRenta/2,propiedadGetHipotecada/2,propiedadGetHotel/2]).
+:- use_module('TDA_carta.pl', [cartaGetDescripcion/2]).
+
+
+
+
 /* -----------------------------------------| 
 |                                           |
 |                                           |
@@ -93,9 +133,9 @@ juegoSetTablero(JuegoIn, TableroIn, JuegoOut):-
 %Dominio:JuegoIN(list)XJugadorIn(list)
 %Recorrido:JuegoOut(list)
 %Tipo de algoritmo:
-juegoAgregarJugador([JugadoresIn, Tablero, DineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles], 
+juegoAgregarJugador([JugadoresIn, Tablero, DineroBanco, Dados, _, TasaImpuesto, MaxCasas, MaxHoteles], 
         JugadorNuevo,
-        [JugadoresOut, Tablero, NuevoDineroBanco, Dados, Turno, TasaImpuesto, MaxCasas, MaxHoteles]):-
+        [JugadoresOut, Tablero, NuevoDineroBanco, Dados, 0, TasaImpuesto, MaxCasas, MaxHoteles]):- %hare que aca el turno actual sea uno cuando se inicia el jugador para que sea el turno del jugador 1
         jugadorNuevoDinero(JugadorNuevo, 1500, JugadorConDinero),
         append(JugadoresIn, [JugadorConDinero], JugadoresOut),
         NuevoDineroBanco is DineroBanco - 1500.
@@ -106,8 +146,9 @@ juegoAgregarJugador([JugadoresIn, Tablero, DineroBanco, Dados, Turno, TasaImpues
 %Recorrido:JugadorActual(list)
 %Tipo de algoritmo:
 juegoObtenerJugadorActual(JuegoIn,JugadorActual):-
-        juego(Jugadores, _, _, _, TurnoActual, _, _, _, JuegoIn),
-        nth0(TurnoActual, Jugadores, JugadorActual).
+        juegoGetTurnoActual(JuegoIn,TurnoActualIn),
+        juegoGetJugadores(JuegoIn,Jugadores),
+        nth0(TurnoActualIn, Jugadores, JugadorActual).
 
 
 
@@ -200,7 +241,10 @@ sumarDados([Cabeza|Cola],Resultado):-
     juegoGetTasaImpuesto(JuegoIn,TasaImpuesto),
     juegoGetMaxCasas(JuegoIn,MaxCasas),
     juegoGetMaxHoteles(JuegoIn,MaxHoteles), 
-    nth0(IdJugador, Jugadores, JugadorMover),
+    Indice is IdJugador - 1,
+    nth0(Indice, Jugadores, JugadorMover),
+
+    
     jugadorSumarPosicion(JugadorMover,ResultadoDados,JugadorMovido),
     tableroActualizarJugadores(Jugadores,JugadorMovido,ListaActualizada),
     juego(ListaActualizada, Tablero, DineroBanco, NumeroDados, TurnoActual, TasaImpuesto, MaxCasas, MaxHoteles, JuegoOut).
@@ -212,19 +256,19 @@ sumarDados([Cabeza|Cola],Resultado):-
 %Recorrido:Monto(int)
 %Tipo de algoritmo: 
 
-juegoCalcularRentaPropiedad(JuegoIn,Propiedad,Monto):-
-  propiedad(_Id,_Nombre,_Precio,RentaBase,_Duenno,CantidadCasas,CantidadHotel,EstaHipotecada,Propiedad),
-  juego(_Jugadores,_Tablero, _DineroBanco, _Dados, _Turno, _TasaImpuesto, MaxCasas, _MaxHoteles, JuegoIn),
-  (EstaHipotecada == true ->
-    Monto = 0
+juegoCalcularRentaPropiedad(JuegoIn, Propiedad, Monto):-
+  Propiedad = [_, _, _, RentaBase, _, CantidadCasas, CantidadHotel, EstaHipotecada],
+  juego(_, _, _, _, _, _, MaxCasas, _, JuegoIn),
+  (
+    EstaHipotecada == true ->
+      Monto = 0
   ; CantidadHotel == true ->
-     Monto is RentaBase*MaxCasas*2
-  ; CantidadCasas>0 ->
-    Monto is  RentaBase*1.2
-  ; 
-  Monto = RentaBase  
+      Monto is RentaBase * MaxCasas * 2
+  ; CantidadCasas > 0 ->
+      Monto is RentaBase * 1.2
+  ;
+      Monto = RentaBase
   ).
-
 
 %caso base de suma de monto de las propiedades
 %Descripcion:Esta funcion suma el monto de todas las rentas que sean propiedad del jugador
@@ -252,7 +296,7 @@ juegoCalcularRentaJugador(JuegoIn,JugadorIn,MontoRenta):-
 %Dominio:JuegoIn(list)XPropiedadIn(List)
 %Recorrido:JuegoOut(list)
 %Tipo de algoritmo:Modificador
-juegoConstruirCasas(JuegoIn,PropiedadIn,JuegoOut):-
+juegoConstruirCasa(JuegoIn,PropiedadIn,JuegoOut):-
   %juego(Jugadores,Tablero, DineroBanco, Dados,Turno, TasaImpuesto, MaxCasas, MaxHoteles, JuegoIn),
   juegoGetJugadores(JuegoIn,Jugadores),
   juegoGetTablero(JuegoIn,Tablero),
@@ -282,6 +326,8 @@ juegoConstruirCasas(JuegoIn,PropiedadIn,JuegoOut):-
 %Recorrido:JuegoOut(list)
 %Tipo de algoritmo: Modificador
 juegoConstruirHotel(JuegoIn,PropiedadIn,JuegoOut):-
+
+
   juegoGetJugadores(JuegoIn,Jugadores),
   juegoGetTablero(JuegoIn,Tablero),
   juegoGetDineroBanco(JuegoIn,DineroBanco),
@@ -303,27 +349,32 @@ juegoConstruirHotel(JuegoIn,PropiedadIn,JuegoOut):-
 
 % extraer carta
 %no esta probadooo debo probarlos
-juegoExtraerCarta(JuegoIn,TipoMazo,Seed,NuevaSeed,JuegoOut,CartaOut):-
+%Descripcion:Esta funcion Permite extraer una carta del mazo, puede ser una carta de suerte o una de comunidad,
+%            Para es esto usa una semilla para generar un numero psudo aleatorio, y compara si es de suerte o comunidad,
+%            luego con el numero generado lo usa como un indece en la indexacion en la lista de suerte o cumunidad segun corresponda
+%            finalmente crea una nueva lista sin esa carta, y la carta extraida la nombre como CartaOut.
+%Dominio:ListaIn(list)XTipoMazo(String)XSeed(list)
+%Recorrido:NuevaSeed(list)XJuegoOut(lista)XCartasOut(list)
+%Tipo de algoritmo:
+juegoExtraerCarta(JuegoIn,TipoMazo,[Seed|_],[NuevaSeed|_],JuegoOut,CartaOut):-
   juegoGetTablero(JuegoIn,Tablero),
   tableroGetCartasComunidad(Tablero,CartasComunidad),
   tableroGetCartasSuerte(Tablero,CartasSuerte),
-  getDadoRandom([Seed|_],NuevaSeed,ResultadoRandom),%esto solo me entrega del uno al 6 ojo
-  (TipoMazo=="carta comunidad"->     %debe estar escrito igual si no se cae
-    nth0(ResultadoRandom,CartasComunidad,CartaOut),
+  getDadoRandom(Seed,NuevaSeed,ResultadoRandom),%esto solo me entrega del uno al 6 
+ 
+  (TipoMazo=="comunidad"->     %debe estar escrito igual si no se cae
+    nth0(ResultadoRandom,CartasComunidad,CartaAux),
+    cartaGetDescripcion(CartaAux,CartaOut),
      tableroActualizarCartas(CartasComunidad, CartaOut, NuevasCartasComunidad),
-     tableroSetListaCartasComunidad(Tablero, NuevasCartasComunidad, TableroActualizado),
-     writeln("tu carta es: "),
-     writeln(CartaOut)
+     tableroSetListaCartasComunidad(Tablero, NuevasCartasComunidad, TableroActualizado)
+     
     
 
-   ;TipoMazo=="carta suerte"->
-    nth0(ResultadoRandom,CartasSuerte,CartaOut),
+   ;TipoMazo=="suerte"->
+    nth0(ResultadoRandom,CartasSuerte,CartaAux),
+    cartaGetDescripcion(CartaAux,CartaOut),
     tableroActualizarCartas(CartasSuerte, CartaOut, NuevasCartasSuerte),
-    tableroSetListaCartasSuerte(Tablero, NuevasCartasSuerte, TableroActualizado),
-     writeln("tu carta es: "),
-     writeln(CartaOut)
+    tableroSetListaCartasSuerte(Tablero, NuevasCartasSuerte, TableroActualizado)
   ),
   juegoSetTablero(JuegoIn,TableroActualizado,JuegoOut).
 
-
-% juego(Jugadores,TableroIn,DineroBanco,NumeroDados,TurnoActual,TasaImpuesto,MaxCasas,MaxHoteles,JuegoOut).
