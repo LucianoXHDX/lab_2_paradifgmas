@@ -18,13 +18,6 @@
 
 :- use_module('TDA_propiedad.pl', [propiedad/9, propiedadGetId/2]).
 %COMENTADA CORRECTAMENTE
-/* -----------------------------------------| 
-|                                           |
-|                                           |
-|             COMENTADA CORECTAMENTE        |
-|                                           |
-|-------------------------------------------|
-*/
 
 
 /*id (int) X nombre (string) X dinero (int) X propiedades (list id's)
@@ -140,7 +133,11 @@ jugadorEstaEnBancarrota(JugadorIn):-
 %verdadero si esta en bancarrota
 
 
-%pagar renta a otro jugador
+
+%Descripcion: Esta funcion permite que un jugador le pague la renta o monto a otro
+%Dominio:JugadorPagadorIn(list)XJugadorReceptorIn(list)XMonto(int)
+%Recorrido:JugadorPagadorOut(list)XJugadorReceptorOut(list)
+%Tipo de algoritmo: modificador
 
 jugadorPagarRenta(JugadorPagadorIn,JugadorReceptorIn,Monto,JugadorPagadorOut,JugadorReceptorOut):-
         jugadorSetDinero(JugadorReceptorIn,Monto,JugadorReceptorOut),%es el jugador que recibe el dinero

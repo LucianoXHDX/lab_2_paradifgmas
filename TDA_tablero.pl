@@ -18,13 +18,7 @@
 :- use_module('TDA_propiedad.pl', [propiedadGetId/2]).
 :- use_module('TDA_jugador.pl', [jugadorGetId/2]).
 :- use_module('TDA_carta.pl', [cartaGetID/2]).
-/* -----------------------------------------| 
-|                                           |
-|                                           |
-|             COMENTADA CORECTAMENTE        |
-|                                           |
-|-------------------------------------------|
-*/
+
 
 %Descripcion:Es el constructor del TDA tablero, genera una lista que representa el tablero del juego
 %Dominio:Propiedades(list)XCartasSuerte(list)XCartasComunidad(list)XCasillasEspeciales(list)
@@ -147,7 +141,12 @@ tableroActualizarJugadores([PrimerJugador|RestoJugadores],JugadorIn,[PrimerJugad
     tableroActualizarJugadores(RestoJugadores,JugadorIn,ListaJugadoresActualizada).
 
 
-%FUNCIOANANDO
+%Descripcion:Esta funcion es la encargade de eliminar una carta de los mazos(lista de comunidad o suerte) que las contiene
+
+%Dominio:ListaCartas (list) X CartaEliminar (list)
+%Recorrido:ListaCartaasEliminadas (list)
+%Tipo de algoritmo: Recursion
+
 tableroActualizarCartas([],_,[]).
 tableroActualizarCartas([PrimeraCarta|RestoCartas],CartaEliminar,ListaEliminada):-
   cartaGetID(CartaEliminar,IdCartaEliminar),
@@ -161,7 +160,6 @@ tableroActualizarCartas([PrimeraCarta|RestoCartas],CartaEliminar,[PrimeraCarta|L
 
 
 %Descripcion:Esta funcion sirve para obtener una propiedad buscada por su id, para esto se la pasa el tablero y el id de la propiedad que quiero buscar y devuleve la propiedad
-
 %Dominio:TableroIn(list)XIDPropiedad(int)
 %Recorrido:Propiedad(list)
 %Tipo de algoritmo: Acceso a un elemento
@@ -171,5 +169,9 @@ tableroGetPropiedad(TableroIn, IdPropiedad, PropiedadOut):-
   nth0(Indice, ListaPropiedades, PropiedadOut),
   [PropiedadOut|_].
 
-%para ignorar la posicion
+%Descripcion:Esta funcion para encapsular sola la propiedad sin la posicion
+
+%Dominio:propiedadConPosicion(list)
+%Recorrido:Propiedad(list)
+%Tipo de algoritmo: Acceso a un elemento
 tableroExtraerPropiedad([Propiedad, _], Propiedad).

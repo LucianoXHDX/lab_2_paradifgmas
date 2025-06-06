@@ -43,13 +43,7 @@
 
 
 
-/* -----------------------------------------| 
-|                                           |
-|                                           |
-|             COMENTADA CORECTAMENTE        |
-|                                           |
-|-------------------------------------------|
-*/
+
 
 %Descripcion: Es el constructor del TDA juego, genera una lista que representar el juego
 %Dominio:Jugadores(list)XTablero(list)XDineroBanco(int)XNumeroDados(int)XTurnoActual(int)XTasaImpuesto(int)XMaximoCasas(int)XMaximoHoteles(int)
@@ -284,6 +278,7 @@ sumarRentaJugador([[PropiedadCompuesta|_]|Resto], TotalRenta) :-
     propiedad(_,_,_,Renta,_,_,_,_,Propiedad),                 
     sumarRentaJugador(Resto, RentaRestante),
     TotalRenta is Renta + RentaRestante.
+
 %Descripcion:Esta funcion se encarga de calgular el monto total de renta de todas las propiedades que posee un jugador
 %Dominio:JuegoIn(list)XJugadorIn(list)
 %Recorrido:MontoRenta(int)
@@ -293,7 +288,8 @@ juegoCalcularRentaJugador(JuegoIn, JugadorIn, MontoRenta):-
     tablero(_, _, _, _, Tablero),
     jugador(_, _, _, PropiedadesJugador, _, _, _, JugadorIn),
     sumarRentaJugador(PropiedadesJugador, MontoRenta).
-%Descripcion:Esta funcion permite construir un hotel en la propiedad si no se ha alcanzado el maximo de casas. 
+
+%Descripcion:Esta funcion permite uan casa en la propiedad si no se ha alcanzado el maximo de casas. 
 %            La funcion crea una nueva propiedad con todos los parametros iguales exceptuando la cantidad de casas a la cual se le sumo una casa, esto lo hace con una funcion axuliar
 %            Tambien se crea un nuevo tablero en el cual se encuentra la lista de las propiedades, se crea otra lista con todas las propiedades igaules excepto por la propiedad que fue modifcida
 %            Finalmente se crea un nuevo tablero con todo los argumentos iguales excepto por el tablero que fue modificado
