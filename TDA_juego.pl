@@ -34,7 +34,8 @@
     tableroActualizarJugadores/3,
     tableroActualizarCartas/3,
     tableroSetListaCartasComunidad/3,
-    tableroSetListaCartasSuerte/3
+    tableroSetListaCartasSuerte/3,
+    tableroExtraerPropiedad/2
 ]).
 :- use_module('TDA_propiedad.pl', [propiedad/9, propiedadGetCasas/2, propiedadSetSumarCasa/2, propiedadSetHotel/2, propiedadHipotecar/2,propiedadGetRenta/2,propiedadGetHipotecada/2,propiedadGetHotel/2]).
 :- use_module('TDA_carta.pl', [cartaGetDescripcion/2]).
@@ -275,20 +276,23 @@ juegoCalcularRentaPropiedad(JuegoIn, Propiedad, Monto):-
 %Dominio:Lista de propiedades(list)
 %Recorrido:Monto Resultante(int)
 %Tipo de algoritmo:Recursivo
-sumarRentaJugador([],0).
-sumarRentaJugador([PrimeraPropiedad|RestoPropiedad],Resultado):-
-        sumarRentaJugador(RestoPropiedad,ResultadoAux),
-        propiedad(_IdPropiedad,_NombrePropiedad,_Precio,Renta,_Duenno,_Casas,_EsHotel,_EstaHipotecada,PrimeraPropiedad),
-        Resultado is ResultadoAux + Renta.
+% Base case
+sumarRentaJugador([], 0).
+
+sumarRentaJugador([[PropiedadCompuesta|_]|Resto], TotalRenta) :-
+    tableroExtraerPropiedad([PropiedadCompuesta], Propiedad), 
+    propiedad(_,_,_,Renta,_,_,_,_,Propiedad),                 
+    sumarRentaJugador(Resto, RentaRestante),
+    TotalRenta is Renta + RentaRestante.
 %Descripcion:Esta funcion se encarga de calgular el monto total de renta de todas las propiedades que posee un jugador
 %Dominio:JuegoIn(list)XJugadorIn(list)
 %Recorrido:MontoRenta(int)
 %Tipo de algoritmo:
-juegoCalcularRentaJugador(JuegoIn,JugadorIn,MontoRenta):-
-  juego(_Jugadores,Tablero, _DineroBanco, _Dados, _Turno, _TasaImpuesto, _MaxCasas, _MaxHoteles, JuegoIn),
-  tablero(_Propiedades,_CartasSuerte,_CartaComunidad,_CasillasEspeciales,Tablero),
-  jugador(_IdJugador, _NombreJugador, _Dinero, PropiedadesJugador, _PosicionActual, _EstaEnCarcel, _TotalCartasSalirCarcel,JugadorIn),
-  sumarRentaJugador(PropiedadesJugador,MontoRenta).
+juegoCalcularRentaJugador(JuegoIn, JugadorIn, MontoRenta):-
+    juego(_, Tablero, _, _, _, _, _, _, JuegoIn),
+    tablero(_, _, _, _, Tablero),
+    jugador(_, _, _, PropiedadesJugador, _, _, _, JugadorIn),
+    sumarRentaJugador(PropiedadesJugador, MontoRenta).
 %Descripcion:Esta funcion permite construir un hotel en la propiedad si no se ha alcanzado el maximo de casas. 
 %            La funcion crea una nueva propiedad con todos los parametros iguales exceptuando la cantidad de casas a la cual se le sumo una casa, esto lo hace con una funcion axuliar
 %            Tambien se crea un nuevo tablero en el cual se encuentra la lista de las propiedades, se crea otra lista con todas las propiedades igaules excepto por la propiedad que fue modifcida
@@ -312,7 +316,8 @@ juegoConstruirCasa(JuegoIn,PropiedadIn,JuegoOut):-
   tableroGetPropiedades(Tablero,ListaPropiedades),
   tableroActualizarPropiedades(ListaPropiedades,PropiedadOut,ListaPropiedadesActualizadas),
   tableroSetListaPropiedades(Tablero,ListaPropiedadesActualizadas,TableroOut),
-  juego(Jugadores,TableroOut,DineroBanco,NumeroDados,TurnoActual,TasaImpuesto,MaxCasas,MaxHoteles,JuegoOut).
+  tableroActualizarJugadores(Jugadores, JugadorDuenno, JugadoresActualizados),
+  juego(JugadoresActualizados,TableroOut,DineroBanco,NumeroDados,TurnoActual,TasaImpuesto,MaxCasas,MaxHoteles,JuegoOut).
   
 
 

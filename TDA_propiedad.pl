@@ -70,7 +70,7 @@ propiedadGetDuenno([_,_,_,_,Duenno|_],Duenno).
 %Dominio:Propiedad(list)
 %Recorrido:Cantidad de Casas(int)
 %Tipo de algoritmo:Acceso a un elemento de la lista
-propiedadGetCasas([_, _, _, _, _, Casas, _, _], Casas).
+propiedadGetCasas([_,_,_,_,_,Casas|_],Casas).
 
 
 %getter de Hotel
